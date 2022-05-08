@@ -25,6 +25,59 @@ router.post('/create', async (req, res, next) => {
     }
   })
 
+  router.get('/:id/edit', async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const movie = await Movie.findById(id);
+      res.render('movies/edit-movie', movie);
+    } catch (error) {
+      next(error);
+    }
+  })
+  
+  router.post('/:id/edit', async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { title, genre, plot, cast} = req.body;
+      await Movie.findByIdAndUpdate(id,
+        {
+          title,
+          genre,
+          plot,
+          cast
+        },
+        {
+          new: true
+        });
+      
+        res.redirect(`/movies/${id}`);
+    } catch (error) {
+      next(error);
+    }
+  })
+  
+
+  router.post('/:id/delete', async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      await Movie.findByIdAndDelete(id);
+  
+      res.redirect('/movies');
+    } catch (error) {
+      next(error);
+    }
+  })
+
+  router.get('/:id', async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const movie = await Movie.findById(id);
+      res.render('movies/movie-details', movie);
+    } catch (error) {
+      next(error);
+    }
+  })
+
 router.get('/', async(req, res, next) => {
     try {
         const movies = await Movie.find();
@@ -33,5 +86,7 @@ router.get('/', async(req, res, next) => {
         next(error)
     }
   })
+
+  
 
 module.exports = router;
